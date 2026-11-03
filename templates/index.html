@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101829">
+  <title>Staywise | Hostel Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Staywise dashboard">
+        <span class="brand-mark">S</span>
+        <span>staywise<small>HOSTEL OPERATIONS</small></span>
+      </a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="navigation" aria-label="Main navigation">
+        <a class="nav-item active" href="#overview"><span class="nav-icon">◫</span> Overview</a>
+        <a class="nav-item" href="#analytics"><span class="nav-icon">◌</span> Analytics</a>
+        <a class="nav-item" href="#payments"><span class="nav-icon">↗</span> Payments</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card">
+          <div class="help-spark">✦</div>
+          <strong>Smart insights</strong>
+          <p>Turn hostel data into your next smart decision.</p>
+          <a href="#analyst">Meet your AI Analyst <span>→</span></a>
+        </div>
+        <div class="profile">
+          <div class="avatar">AM</div>
+          <div><strong>Admin Manager</strong><small>Hostel administrator</small></div>
+          <span class="profile-dots">•••</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div>
+        <div class="top-actions">
+          <span class="live-status"><i></i> Live data</span>
+          <button class="icon-button" aria-label="Notifications">♧<b></b></button>
+          <div class="avatar top-avatar">AM</div>
+        </div>
+      </header>
+
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">MONDAY, <span id="today-date"></span></p>
+          <h1>Good morning, Admin <span class="wave">✦</span></h1>
+          <p class="subtitle">Here’s what’s happening at your hostel today.</p>
+        </div>
+        <div class="filters">
+          <label class="filter-control"><span>MONTH</span><input id="month-filter" type="month"></label>
+          <label class="filter-control"><span>ROOM TYPE</span>
+            <select id="type-filter">
+              <option>All room types</option><option>Single</option><option>Double</option><option>Triple</option><option>Suite</option>
+            </select>
+          </label>
+          <button class="export-button" id="export-button"><span>↓</span> Export report</button>
+        </div>
+      </section>
+
+      <div class="loading-message" id="loading-message" role="status">Loading your hostel analytics…</div>
+      <section class="kpi-grid" aria-label="Key metrics">
+        <article class="kpi-card">
+          <div class="kpi-top"><span>OCCUPANCY RATE</span><span class="kpi-icon purple">⌂</span></div>
+          <div class="kpi-value"><strong id="occupancy-value">—</strong><span class="trend positive">● Healthy</span></div>
+          <div class="kpi-note"><span id="occupied-beds">—</span> beds occupied out of <span id="total-beds">—</span></div>
+          <div class="mini-track"><i id="occupancy-progress"></i></div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-top"><span>MONTHLY REVENUE</span><span class="kpi-icon mint">₹</span></div>
+          <div class="kpi-value"><strong id="revenue-value">—</strong><span class="trend positive">● Collected</span></div>
+          <div class="kpi-note">Paid fees for the selected month</div>
+          <div class="kpi-bottom-note"><span class="tiny-arrow">↗</span> <span id="collection-rate">—</span>% collection rate</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-top"><span>PAYMENTS OVERDUE</span><span class="kpi-icon amber">!</span></div>
+          <div class="kpi-value"><strong id="overdue-value">—</strong><span class="trend attention">Needs attention</span></div>
+          <div class="kpi-note">Overdue payments this month</div>
+          <div class="kpi-bottom-note quiet-note">Review the payment list below</div>
+        </article>
+        <article class="kpi-card highlight-card">
+          <div class="kpi-top"><span>AI PERFORMANCE SCORE</span><span class="kpi-icon score">✦</span></div>
+          <div class="kpi-value"><strong id="score-value">—</strong><span class="score-out-of">/ 100</span></div>
+          <div class="kpi-note">Based on occupancy &amp; collections</div>
+          <div class="score-stars">✦ ✦ ✦ ✦ ✧ <span>On track</span></div>
+        </article>
+      </section>
+
+      <section class="chart-grid" id="analytics" aria-label="Analytics charts">
+        <article class="panel occupancy-panel">
+          <div class="panel-heading"><div><h2>Bed occupancy</h2><p>Current hostel capacity</p></div><button class="more-button" aria-label="More occupancy options">•••</button></div>
+          <div class="occupancy-chart-wrap"><canvas id="occupancy-chart" aria-label="Occupied versus available beds"></canvas>
+            <div class="chart-center"><strong id="chart-occupancy">—</strong><span>OCCUPIED</span></div>
+          </div>
+          <div class="legend-row"><span><i class="legend-dot violet-dot"></i>Occupied <b id="legend-occupied">—</b></span><span><i class="legend-dot pale-dot"></i>Available <b id="legend-available">—</b></span></div>
+        </article>
+        <article class="panel revenue-panel">
+          <div class="panel-heading"><div><h2>Revenue overview</h2><p>Fee collection · last 6 months</p></div><span class="chart-caption">PAID FEES <i></i></span></div>
+          <div class="revenue-summary"><strong id="trend-total">—</strong><span> total across period</span></div>
+          <div class="wide-chart"><canvas id="revenue-chart" aria-label="Monthly revenue bar chart"></canvas></div>
+        </article>
+        <article class="panel room-panel">
+          <div class="panel-heading"><div><h2>Room type mix</h2><p>Occupancy by room category</p></div><button class="more-button" aria-label="More room type options">•••</button></div>
+          <div class="room-chart-wrap"><canvas id="room-chart" aria-label="Room type occupancy chart"></canvas></div>
+          <div class="room-legend" id="room-legend"></div>
+        </article>
+        <article class="panel payments-panel">
+          <div class="panel-heading"><div><h2>Payment status</h2><p>For the selected month</p></div><button class="more-button" aria-label="More payment options">•••</button></div>
+          <div class="payment-chart-wrap"><canvas id="payment-chart" aria-label="Paid, pending and overdue payments"></canvas></div>
+          <div class="payment-legend"><span><i class="legend-dot mint-dot"></i>Paid <b id="paid-count">—</b></span><span><i class="legend-dot yellow-dot"></i>Pending <b id="pending-count">—</b></span><span><i class="legend-dot coral-dot"></i>Overdue <b id="overdue-count">—</b></span></div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel analyst-panel" id="analyst">
+          <div class="panel-heading"><div class="analyst-title"><span class="analyst-icon">✦</span><div><h2>AI Analyst</h2><p>Your data, translated into decisions</p></div></div><span class="powered-badge">SMART INSIGHTS</span></div>
+          <div class="insights-list" id="insights-list" aria-live="polite"></div>
+          <div class="analyst-foot"><span>✦ Insights refresh when you change filters</span><span class="insight-disclaimer">Demo analytics · rule-based</span></div>
+        </article>
+        <article class="panel recent-panel" id="payments">
+          <div class="panel-heading"><div><h2>Recent payments</h2><p>Latest activity for the selected month</p></div><a class="view-all" href="#payments">View all <span>→</span></a></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>RESIDENT</th><th>ROOM</th><th>AMOUNT</th><th>DATE</th><th>STATUS</th></tr></thead>
+              <tbody id="payments-body"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state" hidden>No payments match these filters.</div>
+          </div>
+        </article>
+      </section>
+      <footer class="footer"><span>© 2026 Staywise Hostel Management</span><span>Made for smarter hostel operations <b>✦</b></span></footer>
+    </main>
+  </div>
+</body>
+</html>
